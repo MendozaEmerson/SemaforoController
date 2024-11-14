@@ -1,0 +1,31 @@
+class ControladorInterseccion
+
+types
+   public SemaforoEstado :: 
+    color : <Verde> | <Amarillo> | <Rojo>
+    tiempoRestante : nat;
+
+instance variables
+  semaforos : seq of SemaforoEstado := [];
+  semaforoActivoIndex : nat := 1;
+
+  inv semaforoActivoIndex >= 1 and semaforoActivoIndex <= len semaforos;
+
+operations
+  -- Constructor 
+  public ControladorInterseccion: seq of SemaforoEstado ==> ControladorInterseccion
+  ControladorInterseccion(semaforosIn) ==
+  (
+    semaforos := semaforosIn;
+    semaforoActivoIndex := 1;
+  )
+  pre len semaforosIn > 0;
+
+  public getSemaforoActivo: () ==> SemaforoEstado
+  getSemaforoActivo() == return semaforos(semaforoActivoIndex);
+
+  public siguienteSemaforo: () ==> ()
+  siguienteSemaforo() ==
+    semaforoActivoIndex := if semaforoActivoIndex = len semaforos then 1 else semaforoActivoIndex + 1;
+
+end ControladorInterseccion

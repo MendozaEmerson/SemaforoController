@@ -1,0 +1,41 @@
+class Luz
+
+
+types
+  public Color = <Verde> | <Amarillo> | <Rojo>;
+
+	-- Registro para encapsular el color y la duración
+  public LuzRec :: color    : Color
+           				 duracion : nat;
+           	
+instance variables
+ 
+  -- El valor del registro será una variable de instancia
+  luzInfo : LuzRec;
+
+	inv luzInfo.duracion > 0; -- La duracion debe ser mayor que 0
+
+operations
+  -- Constructor 
+  public Luz : Color * nat ==> Luz
+  Luz(c, d) == 
+  (
+    luzInfo := mk_LuzRec(c, d);
+  )
+  pre d > 0; -- La duracion > 0
+
+  -- Modificar la duración de la luz
+  public setDuracion: nat ==> ()
+  setDuracion(d) ==
+    luzInfo.duracion := d
+  pre d > 0; -- La nueva duracion debe ser válida
+
+  -- Obtener el color
+  public getColor: () ==> Color
+  getColor() == return luzInfo.color;
+
+  -- Obtener la duración
+  public getDuracion: () ==> nat
+  getDuracion() == return luzInfo.duracion;
+
+end Luz
