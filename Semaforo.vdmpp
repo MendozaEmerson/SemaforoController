@@ -9,22 +9,48 @@ instance variables
 --inv luzVerde.getDuracion() > luzAmarilla.getDuracion() and luzVerde.getDuracion() > luzRoja.getDuracion();
 
 operations
+
+	-- Metodos auxiliares para validar condiciones e invariante
+	private validarInvariantes:() ==> bool
+	validarInvariantes() ==
+	  return luzVerde.getDuracion() > luzAmarilla.getDuracion() and
+	         luzVerde.getDuracion() > luzRoja.getDuracion();
+	
+	private validarPrecondicionesConstructor: Luz * Luz * Luz ==> bool
+  validarPrecondicionesConstructor(lv, la, lr) ==
+    return lv.getDuracion() > la.getDuracion() and
+           lv.getDuracion() > lr.getDuracion() and
+           lv.getDuracion() > 0 and la.getDuracion() > 0 and lr.getDuracion() > 0;
+
+  private validarPrecondicionCambioLuz: Luz ==> bool
+  validarPrecondicionCambioLuz(nuevaLuz) ==
+    return nuevaLuz.getDuracion() > 0;
+	
+	         
   -- Constructor para crear un semáforo
   public Semaforo: Luz * Luz * Luz ==> Semaforo
-  Semaforo(lv, la, lr) ==
-  (
-    luzVerde := lv;
-    luzAmarilla := la;
-    luzRoja := lr;
-    luzActual := lv;
-  );
+	Semaforo(lv, la, lr) ==
+	(
+	  if validarPrecondicionesConstructor(lv, la, lr) then (
+      luzVerde := lv;
+      luzAmarilla := la;
+      luzRoja := lr;
+      luzActual := lv;
+      if validarInvariantes() then
+        skip; -- Invariantes validados
+    )
+
+	);
   --pre lv.getDuracion() > la.getDuracion() and lv.getDuracion() > lr.getDuracion() and
       --lv.getDuracion() > 0 and la.getDuracion() > 0 and lr.getDuracion() > 0;
 
   -- Cambiar la luz actual del semáforo
-  public cambiarLuz: Luz ==> ()
+  public cambiarLuz : Luz ==> ()
   cambiarLuz(nuevaLuz) ==
-    luzActual := nuevaLuz;
+  (
+    if validarPrecondicionCambioLuz(nuevaLuz) then
+      luzActual := nuevaLuz;
+  );
   --pre nuevaLuz.getDuracion() > 0;
 
   -- Ajustar los tiempos de las luces en un semáforo
