@@ -39,7 +39,6 @@ operations
       if validarInvariantes() then
         skip; -- Invariantes validados
     )
-
 	);
   --pre lv.getDuracion() > la.getDuracion() and lv.getDuracion() > lr.getDuracion() and
       --lv.getDuracion() > 0 and la.getDuracion() > 0 and lr.getDuracion() > 0;

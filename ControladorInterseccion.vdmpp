@@ -1,31 +1,49 @@
 class ControladorInterseccion
 
-types
-   public SemaforoEstado :: 
-    color : <Verde> | <Amarillo> | <Rojo>
-    tiempoRestante : nat;
-
 instance variables
-  semaforos : seq of SemaforoEstado := [];
+  semaforos : seq of Semaforo := [];
   semaforoActivoIndex : nat := 1;
 
+  -- El índice debe estar en el rango válido
   inv semaforoActivoIndex >= 1 and semaforoActivoIndex <= len semaforos;
 
 operations
-  -- Constructor 
-  public ControladorInterseccion: seq of SemaforoEstado ==> ControladorInterseccion
-  ControladorInterseccion(semaforosIn) ==
+  -- Constructor
+  public ControladorInterseccion: seq of Semaforo ==> ControladorInterseccion
+  ControladorInterseccion(semaforosIn) == 
   (
     semaforos := semaforosIn;
     semaforoActivoIndex := 1;
   )
   pre len semaforosIn > 0;
 
-  public getSemaforoActivo: () ==> SemaforoEstado
+  -- Obtener el semáforo activo
+  public getSemaforoActivo: () ==> Semaforo
   getSemaforoActivo() == return semaforos(semaforoActivoIndex);
 
+  -- Cambiar al siguiente semáforo
   public siguienteSemaforo: () ==> ()
-  siguienteSemaforo() ==
+  siguienteSemaforo() == 
     semaforoActivoIndex := if semaforoActivoIndex = len semaforos then 1 else semaforoActivoIndex + 1;
+
+  -- Cambiar la luz del semáforo activo
+  public cambiarLuzSemaforoActivo: Luz ==> ()
+  cambiarLuzSemaforoActivo(nuevaLuz) == 
+    semaforos(semaforoActivoIndex).cambiarLuz(nuevaLuz);
+
+  -- Ajustar tiempos de todos los semáforos
+  public ajustarTiemposTodos: seq of nat * seq of nat * seq of nat ==> ()
+	ajustarTiemposTodos(tiemposVerde, tiemposAmarillo, tiemposRojo) ==
+	(
+	  -- Iterar sobre los semáforos
+	  for i = 1 to len semaforos do
+	  (
+	    -- Asignar los nuevos tiempos de cada semáforo
+	    semaforos(i).ajustarTiempos(tiemposVerde(i), tiemposAmarillo(i), tiemposRojo(i));
+	  )
+	)
+	pre len tiemposVerde = len semaforos and
+	    len tiemposAmarillo = len semaforos and
+	    len tiemposRojo = len semaforos;
 
 end ControladorInterseccion
