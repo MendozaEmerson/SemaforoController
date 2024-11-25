@@ -4,19 +4,19 @@ instance variables
   luzVerde : Luz;
   luzAmarilla : Luz;
   luzRoja : Luz;
-  luzActual : Luz;
+  public luzActual : Luz;
 
---inv luzVerde.getDuracion() > luzAmarilla.getDuracion() and luzVerde.getDuracion() > luzRoja.getDuracion();
+-- inv luzVerde.getDuracion() > luzAmarilla.getDuracion() and luzVerde.getDuracion() > luzRoja.getDuracion();
 
 operations
 
-	-- Metodos auxiliares para validar condiciones e invariante
-	private validarInvariantes:() ==> bool
-	validarInvariantes() ==
-	  return luzVerde.getDuracion() > luzAmarilla.getDuracion() and
-	         luzVerde.getDuracion() > luzRoja.getDuracion();
-	
-	private validarPrecondicionesConstructor: Luz * Luz * Luz ==> bool
+  -- Métodos auxiliares para validar condiciones 
+  --private validarInvariantes:() ==> bool
+  --validarInvariantes() ==
+    --return luzVerde.getDuracion() > luzAmarilla.getDuracion() and
+           --luzVerde.getDuracion() > luzRoja.getDuracion();
+  
+  private validarPrecondicionesConstructor: Luz * Luz * Luz ==> bool
   validarPrecondicionesConstructor(lv, la, lr) ==
     return lv.getDuracion() > la.getDuracion() and
            lv.getDuracion() > lr.getDuracion() and
@@ -25,32 +25,28 @@ operations
   private validarPrecondicionCambioLuz: Luz ==> bool
   validarPrecondicionCambioLuz(nuevaLuz) ==
     return nuevaLuz.getDuracion() > 0;
-	
-	         
+
   -- Constructor para crear un semáforo
   public Semaforo: Luz * Luz * Luz ==> Semaforo
-	Semaforo(lv, la, lr) ==
-	(
-	  if validarPrecondicionesConstructor(lv, la, lr) then (
+  Semaforo(lv, la, lr) ==
+  (
+    if validarPrecondicionesConstructor(lv, la, lr) then
       luzVerde := lv;
       luzAmarilla := la;
       luzRoja := lr;
       luzActual := lv;
-      if validarInvariantes() then
-        skip; -- Invariantes validados
-    )
-	);
-  --pre lv.getDuracion() > la.getDuracion() and lv.getDuracion() > lr.getDuracion() and
-      --lv.getDuracion() > 0 and la.getDuracion() > 0 and lr.getDuracion() > 0;
+     -- Agregar manejo de error si no se cumple el invariante
+    --else 
+      --skip; -- Manejo de error si las precondiciones no se cumplen
+  );
 
   -- Cambiar la luz actual del semáforo
-  public cambiarLuz : Luz ==> ()
+  public cambiarLuz: Luz ==> ()
   cambiarLuz(nuevaLuz) ==
   (
     if validarPrecondicionCambioLuz(nuevaLuz) then
       luzActual := nuevaLuz;
   );
-  --pre nuevaLuz.getDuracion() > 0;
 
   -- Ajustar los tiempos de las luces en un semáforo
   public ajustarTiempos: nat * nat * nat ==> ()
@@ -59,8 +55,11 @@ operations
     luzVerde.setDuracion(tiempoVerde);
     luzAmarilla.setDuracion(tiempoAmarillo);
     luzRoja.setDuracion(tiempoRojo);
-  )
-  pre tiempoVerde > tiempoAmarillo and tiempoVerde > tiempoRojo and
-      tiempoVerde > 0 and tiempoAmarillo > 0 and tiempoRojo > 0;
+  );
+
+  -- Obtener la luz actual del semáforo
+  public getLuzActual: () ==> Luz
+  getLuzActual() ==
+    return luzActual;
 
 end Semaforo

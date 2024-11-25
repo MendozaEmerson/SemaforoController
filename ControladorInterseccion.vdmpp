@@ -3,19 +3,25 @@ class ControladorInterseccion
 instance variables
   semaforos : seq of Semaforo := [];
   semaforoActivoIndex : nat := 1;
+  trafico : seq of nat := [];-- Nueva variable para el tráfico en cada semáforo
+  colores : Luz`Color;
 
   -- El índice debe estar en el rango válido
   inv semaforoActivoIndex >= 1 and semaforoActivoIndex <= len semaforos;
+  -- La secuencia de tráfico debe tener el mismo tamaño que la secuencia de semáforos
+  inv len trafico = len semaforos;
 
 operations
   -- Constructor
-  public ControladorInterseccion: seq of Semaforo ==> ControladorInterseccion
-  ControladorInterseccion(semaforosIn) == 
+  public ControladorInterseccion: seq of Semaforo * seq of nat ==> ControladorInterseccion
+  ControladorInterseccion(semaforosIn, traff) == 
   (
     semaforos := semaforosIn;
+    trafico := traff;
     semaforoActivoIndex := 1;
+    setearSemaforos()
   )
-  pre len semaforosIn > 0;
+  pre len semaforosIn > 0 and len traff = len semaforosIn;
 
   -- Obtener el semáforo activo
   public getSemaforoActivo: () ==> Semaforo
@@ -24,7 +30,10 @@ operations
   -- Cambiar al siguiente semáforo
   public siguienteSemaforo: () ==> ()
   siguienteSemaforo() == 
+  (
     semaforoActivoIndex := if semaforoActivoIndex = len semaforos then 1 else semaforoActivoIndex + 1;
+    setearSemaforos();
+    );
 
   -- Cambiar la luz del semáforo activo
   public cambiarLuzSemaforoActivo: Luz ==> ()
@@ -45,5 +54,17 @@ operations
 	pre len tiemposVerde = len semaforos and
 	    len tiemposAmarillo = len semaforos and
 	    len tiemposRojo = len semaforos;
+--Setear los demas semaforos  que no deberian estar activos  a Rojo
+  private setearSemaforos: () ==> ()
+	setearSemaforos() ==
+	(
+	  for i = 1 to len semaforos do
+	  (
+	    if i = semaforoActivoIndex then
+	      semaforos(i).cambiarLuz(new Luz(<Verde>, trafico(i)))
+	    else
+	      semaforos(i).cambiarLuz(new Luz(<Rojo>, trafico(i)))
+	  )
+	);
 
 end ControladorInterseccion
