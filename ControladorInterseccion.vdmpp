@@ -17,11 +17,11 @@ operations
   ControladorInterseccion(semaforosIn, traff) == 
   (
     semaforos := semaforosIn;
-    trafico := traff;
     semaforoActivoIndex := 1;
-    setearSemaforos()
+    trafico := traff;
+    setearSemaforos();
   )
-  pre len semaforosIn > 0 and len traff = len semaforosIn;
+  pre len semaforosIn > 0;
 
   -- Obtener el semáforo activo
   public getSemaforoActivo: () ==> Semaforo
@@ -56,15 +56,14 @@ operations
 	    len tiemposRojo = len semaforos;
 --Setear los demas semaforos  que no deberian estar activos  a Rojo
   private setearSemaforos: () ==> ()
-	setearSemaforos() ==
-	(
-	  for i = 1 to len semaforos do
-	  (
-	    if i = semaforoActivoIndex then
-	      semaforos(i).cambiarLuz(new Luz(<Verde>, trafico(i)))
-	    else
-	      semaforos(i).cambiarLuz(new Luz(<Rojo>, trafico(i)))
-	  )
-	);
+  setearSemaforos() ==
+  (
+    for i=1 to len semaforos by 1 do (
+      if i = semaforoActivoIndex then
+        semaforos(i).cambiarLuz(new Luz(<Verde>, trafico(i)))
+      else
+        semaforos(i).cambiarLuz(new Luz(<Rojo>, trafico(i)))
+        );
+    );
 
 end ControladorInterseccion
