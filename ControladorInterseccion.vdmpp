@@ -3,10 +3,11 @@ class ControladorInterseccion
 instance variables
   semaforos : seq of Semaforo := [];
   semaforoActivoIndex : nat := 1;
-  trafico : seq of nat := [];-- Nueva variable para el tráfico en cada semáforo
+  trafico : seq of nat := [];
+  emergencia : seq of bool := []; 
   colores : Luz`Color;
 
-  -- El índice debe estar en el rango válido
+  -- El indice debe estar en el rango valido
   inv semaforoActivoIndex >= 1 and semaforoActivoIndex <= len semaforos;
   -- La secuencia de tráfico debe tener el mismo tamaño que la secuencia de semáforos
   inv len trafico = len semaforos;
@@ -19,6 +20,8 @@ operations
     semaforos := semaforosIn;
     semaforoActivoIndex := 1;
     trafico := traff;
+    emergencia := [false | i in set {1,...,len semaforosIn}];
+    verificarEmergencias();
     setearSemaforos();
   )
   pre len semaforosIn > 0;
@@ -32,6 +35,7 @@ operations
   siguienteSemaforo() == 
   (
     semaforoActivoIndex := if semaforoActivoIndex = len semaforos then 1 else semaforoActivoIndex + 1;
+    verificarEmergencias();
     setearSemaforos();
     );
 
@@ -65,5 +69,20 @@ operations
         semaforos(i).cambiarLuz(new Luz(<Rojo>, trafico(i)))
         );
     );
+    
+
+      -- Verificar si hay una emergencia activa
+  public verificarEmergencias: () ==> ()
+  verificarEmergencias() ==
+  (
+    for i = 1 to len emergencia do
+      if emergencia(i) then 
+      (
+        semaforoActivoIndex := i;
+        setearSemaforos();
+        return; -- Salir del método si se encuentra una emergencia
+      );
+  );
 
 end ControladorInterseccion
+
